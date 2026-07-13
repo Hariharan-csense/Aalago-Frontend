@@ -30,6 +30,7 @@ const emptyForm: Property = {
   images: [],
   description: "",
   highlights: [],
+  bookingUrl: "",
 };
 
 function toList(value: string) {
@@ -44,7 +45,7 @@ function fromList(list: string[]) {
 }
 
 export default function AdminPropertiesPage() {
-  const { showToast } = useToast();
+  const { showToast, showConfirm } = useToast();
   const [items, setItems] = useState<Property[]>([]);
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,6 +63,19 @@ export default function AdminPropertiesPage() {
 
   function patchForm(patch: Partial<Property>) {
     setForm((current) => ({ ...current, ...patch }));
+  }
+
+  async function reloadItems() {
+    try {
+      const [props, dests] = await Promise.all([
+        adminGetProperties(),
+        adminGetDestinations(),
+      ]);
+      setItems(props);
+      setDestinations(dests);
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Failed to refresh list", "error");
+    }
   }
 
   async function load() {
@@ -97,7 +111,7 @@ export default function AdminPropertiesPage() {
 
   function openEdit(item: Property) {
     setEditingId(item.id);
-    setForm(item);
+    setForm({ ...item, bookingUrl: item.bookingUrl ?? "" });
     setMainImage(item.image);
     setAmenitiesText(fromList(item.amenities));
     setHighlightsText(fromList(item.highlights));
@@ -138,8 +152,10 @@ export default function AdminPropertiesPage() {
     try {
       if (editingId) {
         await adminUpdateProperty(editingId, payload);
+        showToast("Property updated", "success");
       } else {
         await adminCreateProperty(payload);
+        showToast("Property created", "success");
       }
       setShowForm(false);
       await load();
@@ -151,10 +167,18 @@ export default function AdminPropertiesPage() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Delete this property?")) return;
+    const confirmed = await showConfirm({
+      title: "Delete property?",
+      message: "This property will be permanently removed.",
+      confirmLabel: "Delete",
+      cancelLabel: "Cancel",
+    });
+    if (!confirmed) return;
     try {
       await adminDeleteProperty(id);
-      await load();
+      setItems((current) => current.filter((item) => item.id !== id));
+      showToast("Property deleted", "success");
+      await reloadItems();
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Delete failed", "error");
     }
@@ -170,6 +194,7 @@ export default function AdminPropertiesPage() {
         setMainImage(uploaded.url);
         patchForm({ image: uploaded.url });
         setGalleryText((current) => current || uploaded.url);
+        showToast("Image uploaded", "success");
       } catch (err) {
         showToast(
           err instanceof Error ? err.message : "Upload failed",
@@ -198,6 +223,7 @@ export default function AdminPropertiesPage() {
         setGalleryText((current) => fromList([...toList(current), ...urls]));
         setMainImage((current) => current || urls[0]);
         setForm((current) => ({ ...current, image: current.image || urls[0] }));
+        showToast("Gallery images uploaded", "success");
       } catch (err) {
         showToast(
           err instanceof Error ? err.message : "Upload failed",
@@ -289,6 +315,16 @@ export default function AdminPropertiesPage() {
               value={form.type}
               onChange={(e) => patchForm({ type: e.target.value })}
               required
+              className="px-3 py-2 rounded-lg border border-gray-200 font-normal"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-sm font-semibold">
+            AalaStays Booking Link
+            <input
+              type="url"
+              value={form.bookingUrl ?? ""}
+              onChange={(e) => patchForm({ bookingUrl: e.target.value })}
+              placeholder="https://book.aalabnb.com/?hotel_id=30521"
               className="px-3 py-2 rounded-lg border border-gray-200 font-normal"
             />
           </label>

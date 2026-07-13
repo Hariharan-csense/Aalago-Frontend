@@ -189,6 +189,7 @@ export default function AdminContentPage() {
       const uploaded = await adminUploadImage(file);
       if (!uploaded.url) throw new Error("Upload returned no image URL");
       await applyUrl(uploaded.url);
+      showToast("Image uploaded", "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Upload failed", "error");
     } finally {
@@ -225,6 +226,7 @@ export default function AdminContentPage() {
         ),
       );
       setAbout(saved);
+      showToast("Gallery images uploaded", "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Upload failed", "error");
     } finally {

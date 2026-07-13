@@ -17,7 +17,7 @@ import type { Destination } from "../../types/api";
 const emptyForm = { id: "", name: "", state: "", image: "", description: "" };
 
 export default function AdminDestinationsPage() {
-  const { showToast } = useToast();
+  const { showToast, showConfirm } = useToast();
   const [items, setItems] = useState<Destination[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -27,6 +27,14 @@ export default function AdminDestinationsPage() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const latestImageRef = useRef("");
+
+  async function reloadItems() {
+    try {
+      setItems(await adminGetDestinations());
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Failed to refresh list", "error");
+    }
+  }
 
   async function load() {
     setLoading(true);
@@ -72,8 +80,10 @@ export default function AdminDestinationsPage() {
     try {
       if (editingId) {
         await adminUpdateDestination(editingId, payload);
+        showToast("Destination updated", "success");
       } else {
         await adminCreateDestination(payload);
+        showToast("Destination created", "success");
       }
       setShowForm(false);
       await load();
@@ -85,10 +95,18 @@ export default function AdminDestinationsPage() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Delete this destination and its linked properties?")) return;
+    const confirmed = await showConfirm({
+      title: "Delete destination?",
+      message: "This will delete the destination and all linked properties.",
+      confirmLabel: "Delete",
+      cancelLabel: "Cancel",
+    });
+    if (!confirmed) return;
     try {
       await adminDeleteDestination(id);
-      await load();
+      setItems((current) => current.filter((item) => item.id !== id));
+      showToast("Destination deleted", "success");
+      await reloadItems();
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Delete failed", "error");
     }
@@ -101,6 +119,7 @@ export default function AdminDestinationsPage() {
       const uploaded = await adminUploadImage(file);
       latestImageRef.current = uploaded.url;
       setForm((current) => ({ ...current, image: uploaded.url }));
+      showToast("Image uploaded", "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Upload failed", "error");
     } finally {

@@ -22,6 +22,7 @@ export interface Property {
   images: string[];
   description: string;
   highlights: string[];
+  bookingUrl?: string;
 }
 
 export interface BlogPost {

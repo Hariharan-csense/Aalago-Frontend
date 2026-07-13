@@ -2,11 +2,9 @@ import { API_BASE_URL, ADMIN_TOKEN_KEY, USE_BACKEND_DATA } from "../config/site"
 import { adminRequest, apiRequest } from "./client";
 import {
   blogPosts,
-  destinations,
   fallbackAboutContent,
   fallbackBannerContent,
   fallbackHomeContent,
-  properties,
 } from "../data/fallback";
 import type {
   AboutContent,
@@ -23,28 +21,17 @@ import type {
 // ── Public: destinations & properties (backend when VITE_API_URL is set) ──
 
 export async function getDestinations(): Promise<Destination[]> {
-  if (!USE_BACKEND_DATA) return destinations;
   const res = await apiRequest<ApiListResponse<Destination>>("/destinations");
   return res.data;
 }
 
 export async function getProperties(destinationId?: string): Promise<Property[]> {
-  if (!USE_BACKEND_DATA) {
-    return destinationId
-      ? properties.filter((p) => p.destinationId === destinationId)
-      : properties;
-  }
   const qs = destinationId ? `?destinationId=${destinationId}` : "";
   const res = await apiRequest<ApiListResponse<Property>>(`/properties${qs}`);
   return res.data;
 }
 
 export async function getProperty(id: string): Promise<Property> {
-  if (!USE_BACKEND_DATA) {
-    const item = properties.find((p) => p.id === id);
-    if (!item) throw new Error("Property not found");
-    return item;
-  }
   const res = await apiRequest<ApiItemResponse<Property>>(`/properties/${id}`);
   return res.data;
 }

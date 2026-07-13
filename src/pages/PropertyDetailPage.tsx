@@ -13,12 +13,25 @@ import { getProperties, getProperty } from "../api/endpoints";
 import { useAsync } from "../hooks/useAsync";
 
 const amenityIcons: Record<string, typeof WifiRoundedIcon> = { WiFi: WifiRoundedIcon, Parking: LocalParkingRoundedIcon, AC: AcUnitRoundedIcon };
+const defaultBookingUrl = "https://aalastays.com";
+const allowedBookingHosts = new Set(["aalastays.com", "www.aalastays.com", "book.aalabnb.com"]);
+
+function safeBookingUrl(value?: string) {
+  if (!value) return defaultBookingUrl;
+  try {
+    const url = new URL(value);
+    return allowedBookingHosts.has(url.hostname.toLowerCase()) ? url.toString() : defaultBookingUrl;
+  } catch {
+    return defaultBookingUrl;
+  }
+}
 
 export default function PropertyDetailPage() {
   const { id } = useParams();
   const { data: property, loading, error, refetch } = useAsync(() => getProperty(id!), [id]);
   const { data: allProps } = useAsync(() => getProperties(property?.destinationId), [property?.destinationId]);
   const similar = allProps?.filter((p) => p.id !== property?.id).slice(0, 3) ?? [];
+  const bookingUrl = safeBookingUrl(property?.bookingUrl);
 
   if (loading) return <LoadingState />;
   if (error || !property) return (
@@ -56,7 +69,17 @@ export default function PropertyDetailPage() {
           <aside className="lg:sticky lg:top-24 h-fit">
             <div className="bg-white border border-gray-200 rounded-xl shadow-lg p-6">
               <p className="m-0 mb-4"><span className="text-3xl font-extrabold text-brand">₹{property.price.toLocaleString("en-IN")}</span><span className="text-charcoal/50 text-sm"> /night</span></p>
-              <button type="button" className="w-full py-3 bg-brand text-white font-bold rounded-lg border-0 cursor-pointer mb-3">Book Now</button>
+              <a
+                href={bookingUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="block w-full py-3 bg-brand text-white font-bold rounded-lg border-0 cursor-pointer mb-3 text-center no-underline"
+              >
+                Check Availability & Book
+              </a>
+              <p className="m-0 mb-4 text-xs leading-relaxed text-charcoal/50 text-center">
+                Availability, room selection, and booking are handled on our booking partner site.
+              </p>
               <Link to="/contact" className="block w-full py-3 text-center border-2 border-brand text-brand font-bold rounded-lg no-underline">Send Enquiry</Link>
             </div>
           </aside>

@@ -26,7 +26,7 @@ const emptyForm: BlogPost = {
 };
 
 export default function AdminBlogPage() {
-  const { showToast } = useToast();
+  const { showToast, showConfirm } = useToast();
   const [items, setItems] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -36,6 +36,14 @@ export default function AdminBlogPage() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const latestImageRef = useRef("");
+
+  async function reloadItems() {
+    try {
+      setItems(await adminGetBlogPosts());
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Failed to refresh list", "error");
+    }
+  }
 
   async function load() {
     setLoading(true);
@@ -75,8 +83,10 @@ export default function AdminBlogPage() {
     try {
       if (editingId) {
         await adminUpdateBlogPost(editingId, payload);
+        showToast("Blog post updated", "success");
       } else {
         await adminCreateBlogPost(payload);
+        showToast("Blog post created", "success");
       }
       setShowForm(false);
       await load();
@@ -88,10 +98,18 @@ export default function AdminBlogPage() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Delete this blog post?")) return;
+    const confirmed = await showConfirm({
+      title: "Delete blog post?",
+      message: "This blog post will be permanently removed.",
+      confirmLabel: "Delete",
+      cancelLabel: "Cancel",
+    });
+    if (!confirmed) return;
     try {
       await adminDeleteBlogPost(id);
-      await load();
+      setItems((current) => current.filter((item) => item.id !== id));
+      showToast("Blog post deleted", "success");
+      await reloadItems();
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Delete failed", "error");
     }
@@ -104,6 +122,7 @@ export default function AdminBlogPage() {
       const uploaded = await adminUploadImage(file);
       latestImageRef.current = uploaded.url;
       setForm((current) => ({ ...current, image: uploaded.url }));
+      showToast("Image uploaded", "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Upload failed", "error");
     } finally {

@@ -1,28 +1,29 @@
 import { type FormEvent, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { adminLogin } from "../../api/endpoints";
+import { useToast } from "../../components/ui/ToastProvider";
 import { useAuth } from "../AuthContext";
 
 export default function AdminLoginPage() {
   const { isAuthenticated, login } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
   const [email, setEmail] = useState("admin@aalago.in");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   if (isAuthenticated) return <Navigate to="/admin" replace />;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    setError("");
     setLoading(true);
     try {
       const res = await adminLogin(email, password);
       login(res.token, res.user);
+      showToast("Welcome back!", "success");
       navigate("/admin");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      showToast(err instanceof Error ? err.message : "Login failed", "error");
     } finally {
       setLoading(false);
     }
@@ -56,7 +57,6 @@ export default function AdminLoginPage() {
               className="px-4 py-3 rounded-lg border border-gray-200 text-base font-normal"
             />
           </label>
-          {error && <p className="text-brand text-sm font-semibold m-0">{error}</p>}
           <button
             type="submit"
             disabled={loading}
