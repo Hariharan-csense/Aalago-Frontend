@@ -1,19 +1,32 @@
 import { type FormEvent, useState } from "react";
 import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
 import { useToast } from "../ui/ToastProvider";
+import { createSubscriber } from "../../api/endpoints";
 
 export default function NewsletterBanner({ title, text }: { title: string; text: string }) {
   const { showToast } = useToast();
   const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!email.trim()) {
       showToast("Please enter your email address.", "warning");
       return;
     }
-    showToast("Thanks for subscribing!", "success");
-    setEmail("");
+    setSubmitting(true);
+    try {
+      await createSubscriber({
+        email,
+        source: "Home Newsletter Banner",
+      });
+      showToast("Thanks for subscribing!", "success");
+      setEmail("");
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Subscription failed", "error");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -28,10 +41,11 @@ export default function NewsletterBanner({ title, text }: { title: string; text:
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email"
-            className="flex-1 px-4 py-3 rounded-lg border-0 outline-0 text-sm"
+            disabled={submitting}
+            className="flex-1 rounded-lg border-0 bg-white px-4 py-3 text-sm text-charcoal shadow-sm outline-0 placeholder:text-charcoal/45 disabled:opacity-70"
           />
-          <button type="submit" className="px-6 py-3 bg-charcoal text-white font-bold rounded-lg border-0 cursor-pointer hover:bg-zinc-800">
-            Subscribe
+          <button type="submit" disabled={submitting} className="px-6 py-3 bg-charcoal text-white font-bold rounded-lg border-0 cursor-pointer hover:bg-zinc-800 disabled:opacity-70">
+            {submitting ? "Subscribing..." : "Subscribe"}
           </button>
         </form>
       </div>

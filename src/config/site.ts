@@ -3,7 +3,7 @@ export const API_BASE_URL =
 
 export const USE_BACKEND_DATA = true;
 
-export const ADMIN_TOKEN_KEY = "aalago_admin_token";
+export const ADMIN_TOKEN_KEY = "aalago_admin_token_v2";
 
 export const siteInfo = {
   phone: "+91 93630 12345",
@@ -16,9 +16,11 @@ export const navLinks = [
   { label: "Home", to: "/" },
   { label: "Destinations", to: "/destinations" },
   { label: "Properties", to: "/properties" },
+  { label: "Partner With Us", to: "/partner-with-us" },
+  { label: "Membership", to: "/membership" },
   { label: "About Us", to: "/about" },
   { label: "Blog", to: "/blog" },
-  { label: "Contact Us", to: "/contact" },
+  { label: "Contact", to: "/contact" },
 ];
 
 export const footerQuickLinks = [
@@ -26,6 +28,8 @@ export const footerQuickLinks = [
   { label: "About Us", to: "/about" },
   { label: "Destinations", to: "/destinations" },
   { label: "Properties", to: "/properties" },
+  { label: "Partner", to: "/partner-with-us" },
+  { label: "Membership", to: "/membership" },
   { label: "Blog", to: "/blog" },
-  { label: "Contact Us", to: "/contact" },
+  { label: "Contact", to: "/contact" },
 ];

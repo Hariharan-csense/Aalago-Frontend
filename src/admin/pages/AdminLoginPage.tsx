@@ -1,4 +1,6 @@
 import { type FormEvent, useState } from "react";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Navigate, useNavigate } from "react-router-dom";
 import { adminLogin } from "../../api/endpoints";
 import { useToast } from "../../components/ui/ToastProvider";
@@ -8,8 +10,9 @@ export default function AdminLoginPage() {
   const { isAuthenticated, login } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("admin@aalago.in");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   if (isAuthenticated) return <Navigate to="/admin" replace />;
@@ -30,8 +33,16 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-charcoal flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+    <div
+      className="relative min-h-screen overflow-hidden bg-charcoal bg-cover bg-center flex items-center justify-center p-4"
+      style={{
+        backgroundImage:
+          "url('https://upload.wikimedia.org/wikipedia/commons/b/b6/RockMemorial.jpg')",
+      }}
+    >
+      <div className="absolute inset-0 bg-black/60" />
+      <div className="absolute inset-0 bg-gradient-to-br from-brand/35 via-black/25 to-black/75" />
+      <div className="relative w-full max-w-md bg-white/95 rounded-2xl shadow-2xl p-8 backdrop-blur">
         <p className="text-2xl font-extrabold text-center mb-1">
           <span className="text-brand">aala</span>GO
         </p>
@@ -49,13 +60,28 @@ export default function AdminLoginPage() {
           </label>
           <label className="flex flex-col gap-1 text-sm font-semibold">
             Password
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="px-4 py-3 rounded-lg border border-gray-200 text-base font-normal"
-            />
+            <span className="relative block">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full px-4 py-3 pr-12 rounded-lg border border-gray-200 text-base font-normal"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((current) => !current)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                title={showPassword ? "Hide password" : "Show password"}
+                className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border-0 bg-transparent text-charcoal/55 hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+              >
+                {showPassword ? (
+                  <VisibilityOff fontSize="small" />
+                ) : (
+                  <Visibility fontSize="small" />
+                )}
+              </button>
+            </span>
           </label>
           <button
             type="submit"
@@ -65,9 +91,6 @@ export default function AdminLoginPage() {
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
-        <p className="text-xs text-charcoal/40 text-center mt-6">
-          Default: admin@aalago.in / admin123
-        </p>
       </div>
     </div>
   );

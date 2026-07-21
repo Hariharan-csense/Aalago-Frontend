@@ -11,8 +11,13 @@ import { LoadingState, ErrorState } from "../components/ui/AsyncState";
 import SafeImage from "../components/ui/SafeImage";
 import { getProperties, getProperty } from "../api/endpoints";
 import { useAsync } from "../hooks/useAsync";
+import { amenityKey, normalizeAmenities } from "../utils/amenities";
 
-const amenityIcons: Record<string, typeof WifiRoundedIcon> = { WiFi: WifiRoundedIcon, Parking: LocalParkingRoundedIcon, AC: AcUnitRoundedIcon };
+const amenityIcons: Record<string, typeof WifiRoundedIcon> = {
+  ac: AcUnitRoundedIcon,
+  parking: LocalParkingRoundedIcon,
+  wifi: WifiRoundedIcon,
+};
 const defaultBookingUrl = "https://aalastays.com";
 const allowedBookingHosts = new Set(["aalastays.com", "www.aalastays.com", "book.aalabnb.com"]);
 
@@ -41,6 +46,8 @@ export default function PropertyDetailPage() {
     </div>
   );
 
+  const amenities = normalizeAmenities(property.amenities);
+
   return (
     <>
       <PageBanner title={property.name} breadcrumbs={[{ label: "Home", to: "/" }, { label: "Properties", to: "/properties" }, { label: property.name }]} image={property.image} />
@@ -63,7 +70,15 @@ export default function PropertyDetailPage() {
               {property.highlights.map((h) => <li key={h} className="flex items-center gap-2 text-sm text-charcoal/70"><CheckCircleRoundedIcon fontSize="small" className="text-brand" />{h}</li>)}
             </ul>
             <div className="flex flex-wrap gap-4">
-              {property.amenities.map((a) => { const Icon = amenityIcons[a]; return Icon ? <span key={a} className="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg text-sm"><Icon fontSize="small" className="text-brand" />{a}</span> : null; })}
+              {amenities.map((a) => {
+                const Icon = amenityIcons[amenityKey(a)] ?? CheckCircleRoundedIcon;
+                return (
+                  <span key={amenityKey(a)} className="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg text-sm">
+                    <Icon fontSize="small" className="text-brand" />
+                    {a}
+                  </span>
+                );
+              })}
             </div>
           </div>
           <aside className="lg:sticky lg:top-24 h-fit">

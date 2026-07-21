@@ -15,7 +15,12 @@ import type {
   BlogPost,
   Destination,
   HomeContent,
+  MembershipPackage,
+  PartnerEnquiry,
+  PartnerEnquiryPayload,
   Property,
+  Subscriber,
+  SubscriberPayload,
 } from "../types/api";
 
 // ── Public: destinations & properties (backend when VITE_API_URL is set) ──
@@ -57,6 +62,27 @@ export async function getPageContent(slug: "home" | "about" | "banners"): Promis
   if (slug === "home") return { ...fallbackHomeContent, ...res.data };
   if (slug === "about") return { ...fallbackAboutContent, ...res.data };
   return { ...fallbackBannerContent, ...res.data };
+}
+
+export async function createPartnerEnquiry(data: PartnerEnquiryPayload) {
+  const res = await apiRequest<ApiItemResponse<PartnerEnquiry>>("/partner-enquiries", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+  return res.data;
+}
+
+export async function createSubscriber(data: SubscriberPayload) {
+  const res = await apiRequest<ApiItemResponse<Subscriber>>("/subscribers", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+  return res.data;
+}
+
+export async function getMembershipPackages() {
+  const res = await apiRequest<ApiListResponse<MembershipPackage>>("/memberships");
+  return res.data;
 }
 
 // ── Admin API ──
@@ -190,4 +216,39 @@ export async function adminUpdatePageContent(slug: "home" | "about" | "banners",
   if (slug === "home") return { ...fallbackHomeContent, ...res.data };
   if (slug === "about") return { ...fallbackAboutContent, ...res.data };
   return { ...fallbackBannerContent, ...res.data };
+}
+
+export async function adminGetPartnerEnquiries() {
+  const res = await adminRequest<ApiListResponse<PartnerEnquiry>>("/admin/partner-enquiries");
+  return res.data;
+}
+
+export async function adminGetSubscribers() {
+  const res = await adminRequest<ApiListResponse<Subscriber>>("/admin/subscribers");
+  return res.data;
+}
+
+export async function adminGetMembershipPackages() {
+  const res = await adminRequest<ApiListResponse<MembershipPackage>>("/admin/memberships");
+  return res.data;
+}
+
+export async function adminCreateMembershipPackage(data: Omit<MembershipPackage, "id">) {
+  const res = await adminRequest<ApiItemResponse<MembershipPackage>>("/admin/memberships", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+  return res.data;
+}
+
+export async function adminUpdateMembershipPackage(id: number, data: Partial<MembershipPackage>) {
+  const res = await adminRequest<ApiItemResponse<MembershipPackage>>(`/admin/memberships/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+  return res.data;
+}
+
+export async function adminDeleteMembershipPackage(id: number) {
+  await adminRequest<void>(`/admin/memberships/${id}`, { method: "DELETE" });
 }

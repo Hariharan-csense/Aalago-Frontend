@@ -14,6 +14,7 @@ import { LoadingState, ErrorState } from "../../components/ui/AsyncState";
 import SafeImage from "../../components/ui/SafeImage";
 import { useToast } from "../../components/ui/ToastProvider";
 import type { Destination, Property } from "../../types/api";
+import { parseAmenityList } from "../../utils/amenities";
 
 const emptyForm: Property = {
   id: "",
@@ -141,7 +142,7 @@ export default function AdminPropertiesPage() {
     const payload: Property = {
       ...form,
       image,
-      amenities: toList(amenitiesText),
+      amenities: parseAmenityList(amenitiesText),
       highlights: toList(highlightsText),
       images: galleryImages.length ? galleryImages : [image],
       price: Number(form.price),

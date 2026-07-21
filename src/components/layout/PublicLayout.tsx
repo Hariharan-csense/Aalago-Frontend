@@ -10,6 +10,8 @@ import BlogPage from "../../pages/BlogPage";
 import ContactPage from "../../pages/ContactPage";
 import LegalPage from "../../pages/LegalPage";
 import NotFoundPage from "../../pages/NotFoundPage";
+import PatnerWithUs from "../../pages/PatnerWithUs";
+import MemberShip from "../../pages/memberShip";
 
 export default function PublicLayout() {
   return (
@@ -24,6 +26,8 @@ export default function PublicLayout() {
           <Route path="/properties/:id" element={<PropertyDetailPage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/partner-with-us" element={<PatnerWithUs />} />
+          <Route path="/membership" element={<MemberShip />} />
           <Route path="/legal" element={<LegalPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

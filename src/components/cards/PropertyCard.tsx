@@ -3,12 +3,20 @@ import AcUnitRoundedIcon from "@mui/icons-material/AcUnitRounded";
 import LocalParkingRoundedIcon from "@mui/icons-material/LocalParkingRounded";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import WifiRoundedIcon from "@mui/icons-material/WifiRounded";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import SafeImage from "../ui/SafeImage";
 import type { Property } from "../../types/api";
+import { amenityKey, normalizeAmenities } from "../../utils/amenities";
 
-const amenityIcons: Record<string, typeof WifiRoundedIcon> = { WiFi: WifiRoundedIcon, Parking: LocalParkingRoundedIcon, AC: AcUnitRoundedIcon };
+const amenityIcons: Record<string, typeof WifiRoundedIcon> = {
+  ac: AcUnitRoundedIcon,
+  parking: LocalParkingRoundedIcon,
+  wifi: WifiRoundedIcon,
+};
 
 export default function PropertyCard({ property }: { property: Property }) {
+  const amenities = normalizeAmenities(property.amenities).slice(0, 4);
+
   return (
     <article className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 flex flex-col">
       <div className="relative">
@@ -24,10 +32,10 @@ export default function PropertyCard({ property }: { property: Property }) {
         <span className="text-xs font-semibold text-brand uppercase">{property.type}</span>
         <h3 className="text-lg font-bold text-charcoal mt-1 mb-1">{property.name}</h3>
         <p className="text-sm text-charcoal/60 mb-3">{property.location}</p>
-        <div className="flex gap-3 mb-4">
-          {property.amenities.map((a) => {
-            const Icon = amenityIcons[a];
-            return Icon ? <span key={a} className="flex items-center gap-1 text-xs text-charcoal/50"><Icon fontSize="inherit" className="text-brand" />{a}</span> : null;
+        <div className="flex flex-wrap gap-3 mb-4">
+          {amenities.map((a) => {
+            const Icon = amenityIcons[amenityKey(a)] ?? CheckCircleRoundedIcon;
+            return <span key={amenityKey(a)} className="flex items-center gap-1 text-xs text-charcoal/50"><Icon fontSize="inherit" className="text-brand" />{a}</span>;
           })}
         </div>
         <div className="mt-auto flex items-center justify-between gap-3">

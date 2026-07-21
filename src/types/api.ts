@@ -97,3 +97,42 @@ export interface AdminLoginResponse {
   token: string;
   user: AdminUser;
 }
+
+export interface PartnerEnquiryPayload {
+  name: string;
+  phoneNumber: string;
+  email: string;
+  city: string;
+  hotelName: string;
+  locationWithinCity?: string;
+  locationPinCode: string;
+  propertyAge: string;
+  numberOfRooms: string;
+  crmPayload?: Record<string, string>;
+}
+
+export interface PartnerEnquiry extends PartnerEnquiryPayload {
+  id: number;
+  createdAt: string;
+}
+
+export interface SubscriberPayload {
+  email: string;
+  source?: string;
+}
+
+export interface Subscriber extends SubscriberPayload {
+  id: number;
+  source: string;
+  createdAt: string;
+}
+
+export interface MembershipPackage {
+  id: number;
+  name: string;
+  price: number;
+  period: string;
+  features: string[];
+  popular: boolean;
+  sortOrder: number;
+}

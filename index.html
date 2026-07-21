@@ -14,6 +14,69 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      (function() {
+        const endpoint = "https://crm.procease.co/backend/integrations/website-form/submit";
+        const publicKey = "wf_24950fe6ad344277b774f92c";
+        const aliases = {
+          name: ["name", "fullName", "full_name"],
+          email: ["email"],
+          phone: ["phone", "phone_number", "mobile"],
+          company: ["company", "company_name", "hotel_name", "organization"],
+          message: ["message", "note", "comments"]
+        };
+
+        function readField(form, keys) {
+          for (const key of keys) {
+            const input = form.querySelector('[name="' + key + '"]');
+            if (!input) continue;
+            const value = String(input.value || "").trim();
+            if (value) return value;
+          }
+          return "";
+        }
+
+        window.submitProceaseLead = async function(leadData) {
+          const payload = Object.assign({ public_key: publicKey, source: "Website Form" }, leadData || {});
+          return fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+        };
+
+        const forms = document.querySelectorAll("form[data-procease-crm-form]");
+        forms.forEach(function(form) {
+          if (form.dataset.proceaseBound === "1") return;
+          form.dataset.proceaseBound = "1";
+
+          form.addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const payload = {
+              public_key: publicKey,
+              name: readField(form, aliases.name),
+              email: readField(form, aliases.email),
+              phone: readField(form, aliases.phone),
+              company: readField(form, aliases.company),
+              message: readField(form, aliases.message),
+              form_id: form.getAttribute("data-form-id") || form.id || "",
+              source: form.getAttribute("data-source") || "Website Form"
+            };
+
+            try {
+              await fetch(endpoint, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+              });
+            } catch (_) {
+            }
+
+            form.submit();
+          });
+        });
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
