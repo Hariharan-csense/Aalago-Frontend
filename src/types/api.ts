@@ -133,6 +133,18 @@ export interface MembershipPackage {
   price: number;
   period: string;
   features: string[];
+  benefits: MembershipBenefits;
   popular: boolean;
   sortOrder: number;
+}
+
+export interface MembershipBenefits {
+  bookingDiscount: string;
+  rewardWallet: string;
+  complimentaryBreakfast: string;
+  earlyCheckInLateCheckOut: string;
+  priorityBooking: string;
+  memberOnlyDeals: string;
+  travelWelcomeKit: string;
+  priorityCustomerSupport: string;
 }
