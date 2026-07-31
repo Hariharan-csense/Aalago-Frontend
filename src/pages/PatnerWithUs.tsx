@@ -11,6 +11,7 @@ import VillaOutlinedIcon from "@mui/icons-material/VillaOutlined";
 import ApartmentOutlinedIcon from "@mui/icons-material/ApartmentOutlined";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import { createPartnerEnquiry } from "../api/endpoints";
+import { isValidEmail, isValidIndianMobile, normalizeMobile } from "../utils/validation";
 
 const whyPartner = [
   {
@@ -194,6 +195,15 @@ export default function PatnerWithUs() {
       form_id: "partner-registration",
       source: "Partner With Us Popup",
     };
+
+    if (!isValidEmail(lead.email)) {
+      setMessage("Please enter a valid email address.");
+      return;
+    }
+    if (!isValidIndianMobile(lead.phoneNumber)) {
+      setMessage("Phone number must be 10 digits and start with 6, 7, 8, or 9.");
+      return;
+    }
 
     setSubmitting(true);
     setMessage("");
@@ -457,12 +467,20 @@ export default function PatnerWithUs() {
                   name="phone_number"
                   label="Phone number"
                   type="tel"
+                  inputMode="numeric"
+                  maxLength={10}
+                  pattern="[6-9][0-9]{9}"
+                  placeholder="9876543210"
+                  onInput={(event) => {
+                    event.currentTarget.value = normalizeMobile(event.currentTarget.value);
+                  }}
                   required
                 />
                 <FormField
                   name="email"
                   label="Email ID"
                   type="email"
+                  pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
                   required
                 />
                 <FormField name="city" label="City" required />
@@ -591,12 +609,20 @@ function FormField({
   placeholder,
   type = "text",
   required = false,
+  inputMode,
+  maxLength,
+  pattern,
+  onInput,
 }: {
   name: string;
   label: string;
   placeholder?: string;
   type?: string;
   required?: boolean;
+  inputMode?: "numeric";
+  maxLength?: number;
+  pattern?: string;
+  onInput?: (event: React.FormEvent<HTMLInputElement>) => void;
 }) {
   return (
     <label className="flex flex-col gap-2 text-sm font-bold text-charcoal">
@@ -607,7 +633,11 @@ function FormField({
         name={name}
         type={type}
         required={required}
+        inputMode={inputMode}
+        maxLength={maxLength}
+        pattern={pattern}
         placeholder={placeholder}
+        onInput={onInput}
         className="h-12 rounded-lg border border-gray-200 px-3 text-sm font-normal outline-none focus:border-brand"
       />
     </label>

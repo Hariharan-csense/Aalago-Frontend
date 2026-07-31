@@ -6,6 +6,7 @@ import LocationOnRoundedIcon from "@mui/icons-material/LocationOnRounded";
 import PageBanner from "../components/layout/PageBanner";
 import { useToast } from "../components/ui/ToastProvider";
 import { siteInfo } from "../config/site";
+import { isValidEmail, isValidIndianMobile, normalizeMobile } from "../utils/validation";
 
 export default function ContactPage() {
   const { showToast } = useToast();
@@ -24,8 +25,17 @@ export default function ContactPage() {
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!name.trim() || !email.trim() || !message.trim()) {
-      showToast("Please fill in name, email, and message.", "warning");
+    const trimmedEmail = email.trim();
+    if (!name.trim() || !trimmedEmail || !mobile.trim() || !message.trim()) {
+      showToast("Please fill in name, email, mobile, and message.", "warning");
+      return;
+    }
+    if (!isValidEmail(trimmedEmail)) {
+      showToast("Please enter a valid email address.", "warning");
+      return;
+    }
+    if (!isValidIndianMobile(mobile)) {
+      showToast("Mobile number must be 10 digits and start with 6, 7, 8, or 9.", "warning");
       return;
     }
     showToast("Your inquiry has been sent. We will get back to you soon.", "success");
@@ -64,7 +74,7 @@ export default function ContactPage() {
             </label>
             <label className="grid gap-1.5 text-sm font-semibold text-charcoal/70 sm:col-span-2">
               Mobile
-              <input type="tel" value={mobile} onChange={(e) => setMobile(e.target.value)} placeholder="+91 98765 43210" className="px-3 py-2.5 border border-gray-200 rounded-lg outline-none font-normal" />
+              <input type="tel" value={mobile} onChange={(e) => setMobile(normalizeMobile(e.target.value))} inputMode="numeric" maxLength={10} pattern="[6-9][0-9]{9}" placeholder="9876543210" className="px-3 py-2.5 border border-gray-200 rounded-lg outline-none font-normal" />
             </label>
             <label className="grid gap-1.5 text-sm font-semibold text-charcoal/70 sm:col-span-2">
               Subject
