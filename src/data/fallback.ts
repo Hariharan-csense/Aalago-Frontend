@@ -1,11 +1,59 @@
 import type { AboutContent, BannerContent, BlogPost, Destination, HomeContent, Property } from "../types/api";
 
 export const whyChooseUs = [
-  { title: "Curated Properties", copy: "Handpicked stays near sacred destinations with verified quality standards." },
-  { title: "Spiritual Destinations", copy: "Explore India's most revered temple towns with local guidance." },
-  { title: "Easy Discovery", copy: "Search by temple, route, family needs, and arrival timing." },
-  { title: "Trusted Hospitality", copy: "Reliable stays built for pilgrims, families, and spiritual travellers." },
+  { title: "Best Price Guarantee", copy: "Enjoy competitive prices with exclusive member discounts." },
+  { title: "Verified Properties", copy: "Every property is carefully verified for quality and comfort." },
+  { title: "Instant Confirmation", copy: "Receive instant booking confirmation." },
+  { title: "Secure Payments", copy: "100% secure online payment gateway." },
+  { title: "24x7 Customer Support", copy: "Our team is always ready to help." },
+  { title: "Trusted by Thousands of Travelers", copy: "Hotels, Homestays, Resorts, Villas & Temple Stays." },
 ];
+
+export const stayTypes = [
+  "Hotels",
+  "Homestays",
+  "Resorts",
+  "Farm Stays",
+  "Serviced Apartments",
+  "Dormitories",
+  "Temple Stays",
+  "Holiday Villas",
+];
+
+export const popularDestinations = [
+  "Tiruchendur",
+  "Madurai",
+  "Kanyakumari",
+  "Courtallam",
+  "Rameswaram",
+  "Velankanni",
+  "Tirunelveli",
+  "Chennai",
+  "Ooty",
+  "Kodaikanal",
+  "Yercaud",
+  "Coimbatore",
+  "Bengaluru",
+  "Mysuru",
+  "Hyderabad",
+];
+
+export const templeTourism = {
+  title: "Temple Tourism",
+  subtitle: "Stay Near India's Most Sacred Temples",
+  copy: "Book accommodation close to famous pilgrimage destinations.",
+  temples: [
+    "Tiruchendur Murugan Temple",
+    "Madurai Meenakshi Temple",
+    "Rameswaram Ramanathaswamy Temple",
+    "Kanyakumari Bhagavathy Temple",
+    "Palani Murugan Temple",
+    "Velankanni Basilica",
+    "Sabarimala",
+    "Tirupati",
+  ],
+  tagline: "Comfortable • Affordable • Family Friendly",
+};
 
 export const destinations: Destination[] = [
   { id: "rameswaram", name: "Rameswaram", state: "Tamil Nadu", image: "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80", description: "Walk the sacred corridors of Rameswaram and stay close to the Ramanathaswamy Temple.", properties: 11 },
@@ -41,9 +89,10 @@ export const testimonials = [
 ];
 
 export const fallbackHomeContent: HomeContent = {
-  heroTitle: "Discover",
-  heroHighlight: "Peaceful Stays",
-  heroSubtitle: "Find reliable temple-town hospitality for pilgrims, families, and spiritual travellers across India.",
+  heroKicker: "AalaGO Book Direct. Save More. Travel Better",
+  heroTitle: "Find Your Perfect Stay,",
+  heroHighlight: "Anywhere in India",
+  heroSubtitle: "Book Hotels • Homestays • Temple Stays • Holiday Homes Across India",
   heroImage: "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=1600&q=80",
   aboutTitle: "Temple-Town Hospitality You Can Trust",
   aboutText: [
@@ -54,6 +103,9 @@ export const fallbackHomeContent: HomeContent = {
   newsletterTitle: "Begin Your Spiritual Journey Today",
   newsletterText: "Get temple-town openings, stay standards, and route ideas in your inbox.",
   whyChooseUs,
+  stayTypes,
+  popularDestinations,
+  templeTourism,
   testimonials,
 };
 

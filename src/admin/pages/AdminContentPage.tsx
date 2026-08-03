@@ -274,6 +274,16 @@ export default function AdminContentPage() {
       >
         {slug === "home" && home && (
           <>
+            <label className="flex flex-col gap-1 text-sm font-semibold md:col-span-2">
+              Hero Kicker
+              <input
+                value={home.heroKicker ?? ""}
+                onChange={(e) =>
+                  setHome({ ...home, heroKicker: e.target.value })
+                }
+                className="px-3 py-2 rounded-lg border border-gray-200 font-normal"
+              />
+            </label>
             <label className="flex flex-col gap-1 text-sm font-semibold">
               Hero Title
               <input

@@ -48,7 +48,16 @@ export interface FeatureItem {
   copy: string;
 }
 
+export interface TempleTourismContent {
+  title: string;
+  subtitle: string;
+  copy: string;
+  temples: string[];
+  tagline: string;
+}
+
 export interface HomeContent {
+  heroKicker?: string;
   heroTitle: string;
   heroHighlight: string;
   heroSubtitle: string;
@@ -59,6 +68,9 @@ export interface HomeContent {
   newsletterTitle: string;
   newsletterText: string;
   whyChooseUs: FeatureItem[];
+  stayTypes?: string[];
+  popularDestinations?: string[];
+  templeTourism?: TempleTourismContent;
   testimonials: Testimonial[];
 }
 
